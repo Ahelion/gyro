@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gyroscope Reader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #data {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gyroscope Data</h1>
+    <button id="requestPermission">Enable Gyroscope</button>
+    <div id="data">
+        <p>Alpha: <span id="alpha">N/A</span></p>
+        <p>Beta: <span id="beta">N/A</span></p>
+        <p>Gamma: <span id="gamma">N/A</span></p>
+    </div>
+
+    <script>
+        const alphaElem = document.getElementById('alpha');
+        const betaElem = document.getElementById('beta');
+        const gammaElem = document.getElementById('gamma');
+        const requestPermissionBtn = document.getElementById('requestPermission');
+
+        // Function to start reading gyroscope data
+        function startGyroscope() {
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', (event) => {
+                    alphaElem.textContent = event.alpha.toFixed(2);
+                    betaElem.textContent = event.beta.toFixed(2);
+                    gammaElem.textContent = event.gamma.toFixed(2);
+                });
+            } else {
+                alert("Your device does not support gyroscope.");
+            }
+        }
+
+        // Request permission for iOS
+        requestPermissionBtn.addEventListener('click', () => {
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            startGyroscope();
+                        } else {
+                            alert('Permission to access the gyroscope was denied.');
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                // Non-iOS devices, just start directly
+                startGyroscope();
+            }
+        });
+    </script>
+
+</body>
+</html>
